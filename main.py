@@ -5,14 +5,32 @@ from pathvalidate import sanitize_filename
 from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
+import argparse
 
 
 def main():
+    parser = create_parser()
+    print(parser)
+    args = parser.parse_args()
+    print(args)
+
     folder_images = 'images'
-    for book_id in range(11):
+    for book_id in range(args.start_id, args.end_id):
         book = parse_book_page(book_id)
-        print('все о книге', book)
+        # print('все о книге', book)
         # download_books(book_id, title, img_url)
+
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(description='Скрипт для скачивание книг с сайта https://tululu.org/')
+    parser.add_argument('--start_id', nargs='?', default=1,
+                        help='Начать с какого id книги парсить', type=int)
+    parser.add_argument('--end_id', nargs='?', default=9999,
+                        help='Закончить каким id книги парсить', type=int)
+
+    return parser
+
 
 
 def parse_book_page(book_id):
