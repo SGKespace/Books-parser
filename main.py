@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 def main():
     folder_images = 'images'
     for book_id in range(11):
-        title, author, img_url, book_comments = book_info(book_id)
+        title, author, img_url, book_comments, book_genres = book_info(book_id)
         # download_books(book_id, title, img_url)
 
 
@@ -43,12 +43,18 @@ def book_info(book_id):
     except TypeError:
         book_comments = None
 
+    try:
+        book_genres = [genre.text for genre in soup.select('span.d_book a')]
+    except TypeError:
+        book_genres = None
+
 
     print('Загаловок: ', title)
     print('Автор: ', author)
     print('Адрес картинки:  ', img_url)
     print(book_comments)
-    return title, author, img_url, book_comments
+    print(book_genres)
+    return title, author, img_url, book_comments, book_genres
 
 
 def download_books(book_id, title, img_url):  # это все уйдет в main() без функции
