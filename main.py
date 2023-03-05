@@ -10,11 +10,12 @@ from bs4 import BeautifulSoup
 def main():
     folder_images = 'images'
     for book_id in range(11):
-        title, author, img_url, book_comments, book_genres = book_info(book_id)
+        book = parse_book_page(book_id)
+        print('все о книге', book)
         # download_books(book_id, title, img_url)
 
 
-def book_info(book_id):
+def parse_book_page(book_id):
     url = f'https://tululu.org/b{book_id}/'
     response = requests.get(url)
     response.raise_for_status()
@@ -48,13 +49,22 @@ def book_info(book_id):
     except TypeError:
         book_genres = None
 
-
     print('Загаловок: ', title)
     print('Автор: ', author)
     print('Адрес картинки:  ', img_url)
     print(book_comments)
     print(book_genres)
-    return title, author, img_url, book_comments, book_genres
+
+    book = {
+        'book_name': title,
+        'book_author': author,
+        'book_image_url': img_url,
+        'book_comments': book_comments,
+        'book_genres': book_genres,
+    }
+
+    return book
+
 
 
 def download_books(book_id, title, img_url):  # это все уйдет в main() без функции
