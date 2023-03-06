@@ -16,8 +16,8 @@ def main():
     Path(folder_txt).mkdir(parents=True, exist_ok=True)
     Path(folder_images).mkdir(parents=True, exist_ok=True)
 
-    # for book_id in range(args.start_id, args.end_id):
-    for book_id in range(1, 10):
+    for book_id in range(args.start_id, args.end_id):
+
         url = f'https://tululu.org/b{book_id}/'
         response = requests.get(url)
         response.raise_for_status()
@@ -46,8 +46,6 @@ def main():
                 print('Нет картинки.  book_id: ', book_id)
 
 
-
-
 def create_parser():
     parser = argparse.ArgumentParser(description='Скрипт для скачивание книг с сайта https://tululu.org/')
     parser.add_argument('--start_id', nargs='?', default=1,
@@ -63,11 +61,11 @@ def parse_book_page(url, soup):
     if not book_url:
         return
 
-    text_pars = soup.find(id="content").find('h1').text
-    split_text = text_pars.split('::', maxsplit=1)
-    author = split_text[1].strip()
-    title = split_text[0].strip()
-    title = sanitize_filename(title)
+    pars_text = soup.find(id="content").find('h1').text
+
+    author, title = pars_text.split('::', maxsplit=1)
+    author = author.strip()
+    title = sanitize_filename(title.strip())
 
     book_txt_url = urljoin(url, book_url['href'])
     if not book_txt_url:
@@ -87,7 +85,7 @@ def parse_book_page(url, soup):
         'book_image_url': img_url,
         'book_comments': book_comments,
         'book_genres': book_genres,
-            }
+    }
     return book
 
 
