@@ -16,29 +16,36 @@ def main():
     Path(folder_txt).mkdir(parents=True, exist_ok=True)
     Path(folder_images).mkdir(parents=True, exist_ok=True)
 
-    for book_id in range(args.start_id, args.end_id):
+    # for book_id in range(args.start_id, args.end_id):
+    for book_id in range(1, 10):
+        url = f'https://tululu.org/b{book_id}/'
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'lxml')
+        book = parse_book_page(response.url, soup)
+        if book:
+            title = book['book_name']
+            img_url = book['book_image_url']
 
-        book = parse_book_page(book_id)
-        title = book['book_name']
-        img_url = book['book_image_url']
+            download_txt_flag = True
+            try:
+                if download_txt_flag:
+                    txt_filepath = download_txt(title, book_id, folder_txt)
+                else:
+                    txt_filepath = ''
+            except requests.exceptions.HTTPError:
+                print('Нет книги.  book_id: ', book_id)
 
-        download_txt_flag = True
-        try:
-            if download_txt_flag:
-                txt_filepath = download_txt(title, book_id, folder_txt)
-            else:
-                txt_filepath = ''
-        except requests.exceptions.HTTPError:
-            print('Нет книги.  book_id: ', book_id)
+            download_txt_flag = True
+            try:
+                if download_txt_flag:
+                    img_filepath = download_image(title, img_url, folder_images, book_id)
+                else:
+                    img_filepath = ''
+            except requests.exceptions.MissingSchema:
+                print('Нет картинки.  book_id: ', book_id)
 
-        download_txt_flag = True
-        try:
-            if download_txt_flag:
-                img_filepath = download_image(title, img_url, folder_images, book_id)
-            else:
-                img_filepath = ''
-        except requests.exceptions.MissingSchema:
-            print('Нет картинки.  book_id: ', book_id)
+
 
 
 def create_parser():
@@ -50,36 +57,33 @@ def create_parser():
     return parser
 
 
-def parse_book_page(book_id):
-    url = f'https://tululu.org/b{book_id}/'
-    response = requests.get(url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'lxml')
-    try:
-        text_pars = soup.find(id="content").find('h1').text
-        split_text = text_pars.split('::', maxsplit=1)
-        author = split_text[1].strip()
-        title = split_text[0].strip()
-        title = sanitize_filename(title)
-    except AttributeError:
-        author = None
-        title = None
-    try:
-         pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
-         img_url = urljoin(url, pars_img_url)
-    except TypeError:
-        img_url = None
-    try:
-         book_comments = [comment.text for comment in soup.select('div.texts span.black')]
-    except TypeError:
-        book_comments = None
-    try:
-        book_genres = [genre.text for genre in soup.select('span.d_book a')]
-    except TypeError:
-        book_genres = None
+def parse_book_page(url, soup):
+
+    book_url = soup.find('a', text='скачать txt')
+    if not book_url:
+        return
+
+    text_pars = soup.find(id="content").find('h1').text
+    split_text = text_pars.split('::', maxsplit=1)
+    author = split_text[1].strip()
+    title = split_text[0].strip()
+    title = sanitize_filename(title)
+
+    book_txt_url = urljoin(url, book_url['href'])
+    if not book_txt_url:
+        return
+
+    pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
+    img_url = urljoin(url, pars_img_url)
+
+    book_comments = [comment.text for comment in soup.select('div.texts span.black')]
+
+    book_genres = [genre.text for genre in soup.select('span.d_book a')]
+
     book = {
         'book_name': title,
         'book_author': author,
+        'book_txt_url': book_txt_url if book_url else None,
         'book_image_url': img_url,
         'book_comments': book_comments,
         'book_genres': book_genres,
