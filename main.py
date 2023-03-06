@@ -10,16 +10,35 @@ import argparse
 
 def main():
     parser = create_parser()
-    print(parser)
     args = parser.parse_args()
-    print(args)
-
+    folder_txt = 'books'
     folder_images = 'images'
-    for book_id in range(args.start_id, args.end_id):
-        book = parse_book_page(book_id)
-        # print('все о книге', book)
-        # download_books(book_id, title, img_url)
+    Path(folder_txt).mkdir(parents=True, exist_ok=True)
+    Path(folder_images).mkdir(parents=True, exist_ok=True)
 
+    for book_id in range(args.start_id, args.end_id):
+
+        book = parse_book_page(book_id)
+        title = book['book_name']
+        img_url = book['book_image_url']
+
+        download_txt_flag = True
+        try:
+            if download_txt_flag:
+                txt_filepath = download_txt(title, book_id, folder_txt)
+            else:
+                txt_filepath = ''
+        except requests.exceptions.HTTPError:
+            print('Нет книги.  book_id: ', book_id)
+
+        download_txt_flag = True
+        try:
+            if download_txt_flag:
+                img_filepath = download_image(title, img_url, folder_images, book_id)
+            else:
+                img_filepath = ''
+        except requests.exceptions.MissingSchema:
+            print('Нет картинки.  book_id: ', book_id)
 
 
 def create_parser():
@@ -28,9 +47,7 @@ def create_parser():
                         help='Начать с какого id книги парсить', type=int)
     parser.add_argument('--end_id', nargs='?', default=9999,
                         help='Закончить каким id книги парсить', type=int)
-
     return parser
-
 
 
 def parse_book_page(book_id):
@@ -44,74 +61,30 @@ def parse_book_page(book_id):
         author = split_text[1].strip()
         title = split_text[0].strip()
         title = sanitize_filename(title)
-
     except AttributeError:
         author = None
         title = None
-
     try:
          pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
          img_url = urljoin(url, pars_img_url)
     except TypeError:
         img_url = None
-
     try:
-         book_comments = [
-             comment.text for comment in soup.select('div.texts span.black')
-                          ]
+         book_comments = [comment.text for comment in soup.select('div.texts span.black')]
     except TypeError:
         book_comments = None
-
     try:
         book_genres = [genre.text for genre in soup.select('span.d_book a')]
     except TypeError:
         book_genres = None
-
-    print('Загаловок: ', title)
-    print('Автор: ', author)
-    print('Адрес картинки:  ', img_url)
-    print(book_comments)
-    print(book_genres)
-
     book = {
         'book_name': title,
         'book_author': author,
         'book_image_url': img_url,
         'book_comments': book_comments,
         'book_genres': book_genres,
-    }
-
+            }
     return book
-
-
-
-def download_books(book_id, title, img_url):  # это все уйдет в main() без функции
-    folder_txt = 'books'
-    folder_images = 'images'
-    Path(folder_txt).mkdir(parents=True, exist_ok=True)
-    Path(folder_images).mkdir(parents=True, exist_ok=True)
-
-    download_txt_flag = True
-    try:
-        if download_txt_flag:
-            txt_filepath = download_txt(title, book_id, folder_txt)
-        else:
-            txt_filepath = ''
-        print(book_id)
-        print(txt_filepath)
-    except requests.exceptions.HTTPError:
-        print('Нет книги.  book_id: ', book_id)
-
-    download_txt_flag = True
-    try:
-        if download_txt_flag:
-            img_filepath = download_image(title, img_url, folder_images, book_id)
-        else:
-            img_filepath = ''
-        print(book_id)
-        print(img_filepath)
-    except requests.exceptions.MissingSchema:
-        print('Нет картинки.  book_id: ', book_id)
 
 
 def check_for_redirect(response):
@@ -125,7 +98,6 @@ def download_txt(title, book_id, folder):
     response = requests.get(url, params=params)
     response.raise_for_status()
     check_for_redirect(response)
-
     file_path = Path(f"./{folder}/{book_id}.{title}.txt")
     with file_path.open('wb') as file:
         file.write(response.content)
@@ -139,7 +111,7 @@ def download_image(title, img_url, folder_images, book_id):
 
     split_url = urllib.parse.urlsplit(img_url)
     full_path, full_name = os.path.split(split_url.path)
-    file_name, file_extension = os.path.splitext(full_name)   # не понятно из задания какое имя файла надо - заранее под разные варианты
+    file_name, file_extension = os.path.splitext(full_name)
 
     file_path = Path(f"./{folder_images}/{book_id}.{title}.{file_extension}")
     with file_path.open('wb') as file:
