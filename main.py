@@ -16,9 +16,8 @@ def main():
     folder_images = 'images'
     Path(folder_txt).mkdir(parents=True, exist_ok=True)
     Path(folder_images).mkdir(parents=True, exist_ok=True)
-
-    for book_id in range(0, 60):
-    # for book_id in range(args.start_id, args.end_id):
+    
+    for book_id in range(args.start_id, args.end_id):
 
         total_connection_try, current_connection_try = 5, 0
         while True and current_connection_try < total_connection_try:
