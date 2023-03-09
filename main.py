@@ -9,6 +9,15 @@ import argparse
 import time
 
 
+class Url_Error(TypeError):
+    pass
+
+
+def check_for_not_url(url):
+    if not isinstance(url, str):
+        raise Url_Error
+
+
 def main():
     parser = create_parser()
     args = parser.parse_args()
@@ -16,7 +25,7 @@ def main():
     folder_images = 'images'
     Path(folder_txt).mkdir(parents=True, exist_ok=True)
     Path(folder_images).mkdir(parents=True, exist_ok=True)
-    
+
     for book_id in range(args.start_id, args.end_id):
 
         total_connection_try, current_connection_try = 5, 0
@@ -30,13 +39,16 @@ def main():
 
                 soup = BeautifulSoup(response.text, 'lxml')
                 book = parse_book_page(response.url, soup)
+                check_for_not_url(book['book_txt_url'])
+
                 title = book['book_name']
                 img_url = book['book_image_url']
                 txt_filepath = download_txt(title, book_id, folder_txt)
                 img_filepath = download_image(title, img_url, folder_images, book_id)
                 break
-            except TypeError:
-                print('Нет страницы с книгой.  book_id: ', book_id)
+            except Url_Error:
+                print('Нет книги для скачивания')
+                break
             except requests.exceptions.HTTPError:
                 print('Нет страницы с книгой.  book_id: ', book_id)
                 break
@@ -58,23 +70,15 @@ def create_parser():
 
 def parse_book_page(url, soup):
     book_url = soup.find('a', text='скачать txt')
-    if not book_url:
-        return
     pars_text = soup.find(id="content").find('h1').text
     author, title = pars_text.split('::', maxsplit=1)
     author = author.strip()
     title = sanitize_filename(title.strip())
     book_txt_url = urljoin(url, book_url['href'])
-    if not book_txt_url:
-        return
-
     pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
     img_url = urljoin(url, pars_img_url)
-
     book_comments = [comment.text for comment in soup.select('div.texts span.black')]
-
     book_genres = [genre.text for genre in soup.select('span.d_book a')]
-
     book = {
         'book_name': title,
         'book_author': author,
