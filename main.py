@@ -13,11 +13,6 @@ class Url_Error(TypeError):
     pass
 
 
-def check_for_not_url(url):
-    if not isinstance(url, str):
-        raise Url_Error
-
-
 def main():
     parser = create_parser()
     args = parser.parse_args()
@@ -27,20 +22,15 @@ def main():
     Path(folder_images).mkdir(parents=True, exist_ok=True)
 
     for book_id in range(args.start_id, args.end_id):
-
         total_connection_try, current_connection_try = 5, 0
-        while True and current_connection_try < total_connection_try:
-
+        while current_connection_try < total_connection_try:
             url = f'https://tululu.org/b{book_id}/'
             try:
                 response = requests.get(url)
                 response.raise_for_status()
                 check_for_redirect(response)
-
                 soup = BeautifulSoup(response.text, 'lxml')
                 book = parse_book_page(response.url, soup)
-                check_for_not_url(book['book_txt_url'])
-
                 title = book['book_name']
                 img_url = book['book_image_url']
                 txt_filepath = download_txt(title, book_id, folder_txt)
@@ -70,6 +60,8 @@ def create_parser():
 
 def parse_book_page(url, soup):
     book_url = soup.find('a', text='скачать txt')
+    if book_url is None:
+        raise Url_Error
     pars_text = soup.find(id="content").find('h1').text
     author, title = pars_text.split('::', maxsplit=1)
     author = author.strip()
