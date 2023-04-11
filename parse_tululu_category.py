@@ -4,12 +4,11 @@ from pathlib import Path
 from time import sleep
 from urllib.parse import urljoin, urlparse
 
-
 import requests
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from tqdm import tqdm
-from main import download_image, download_txt, check_for_redirect
+from main import download_image, download_txt, check_for_redirect, parse_book_page, Url_Error
 
 
 def find_last_page(url):
@@ -24,8 +23,8 @@ def parse_category_page(category_url, page):
     response.raise_for_status()
     check_for_redirect(response)
     soup = BeautifulSoup(response.text, 'lxml')
-    book_tags = soup.find_all(class_='bookimage')
-    book_links = [urljoin(url, book_tag.find('a')['href']) for book_tag in book_tags]
+    book_tags = soup.select('.bookimage')
+    book_links = [urljoin(url, book_tag.select_one('a')['href']) for book_tag in book_tags]
     return book_links
 
 
@@ -41,31 +40,20 @@ def get_category_books(book_url):
             response = requests.get(book_url)
             response.raise_for_status()
             check_for_redirect(response)
-            books_tag[book_id] = parse_book_page(response, book_url)
-            download_image(books_tag[book_id]['Title'], books_tag[book_id]['Image'], folder_images, book_id)
-            download_txt(books_tag[book_id]['Title'], book_id, folder_txt)
+            soup = BeautifulSoup(response.text, 'lxml')
+            books_tag[book_id] = parse_book_page(response.url, soup)
+            download_image(books_tag[book_id]['book_name'], books_tag[book_id]['book_image_url'], folder_images, book_id)
+            download_txt(books_tag[book_id]['book_name'], book_id, folder_txt)
             break
         except requests.HTTPError:
             break
         except requests.ConnectionError:
             sleep(10)
+        except Url_Error:
+            print('Нет книги для скачивания')
+            break
     return books_tag
 
-def parse_book_page(response, book_url):
-    soup = BeautifulSoup(response.text, 'lxml')
-    title = soup.find('h1').text.split("::")[0].strip(" \xa0 ")
-    author = soup.find('h1').text.split("::")[1].strip(" \xa0 ")
-    book_img = soup.find(class_='bookimage').find('img')['src']
-    img_url = (urljoin(book_url, book_img))
-    genres = [genre.text for genre in soup.select('span.d_book a')]
-    comments = [comment.text for comment in soup.select('.texts span')]
-    return {
-        'Title': title,
-        'Author': author,
-        'Image': img_url,
-        'Genres': genres,
-        'Comments': comments
-    }
 
 
 def save_json(books_tag, folder='.'):

@@ -62,10 +62,14 @@ def parse_book_page(url, soup):
     book_url = soup.find('a', text='скачать txt')
     if book_url is None:
         raise Url_Error
-    pars_text = soup.find(id="content").find('h1').text
-    author, title = pars_text.split('::', maxsplit=1)
+
+    author_title = soup.select_one('#content h1').text
+    title, author = [name.strip() for name in author_title.split('::')]
+
+
     author = author.strip()
     title = sanitize_filename(title.strip())
+
     book_txt_url = urljoin(url, book_url['href'])
     pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
     img_url = urljoin(url, pars_img_url)
@@ -108,7 +112,7 @@ def download_image(title, img_url, folder_images, book_id):
     full_path, full_name = os.path.split(split_url.path)
     file_name, file_extension = os.path.splitext(full_name)
 
-    file_path = Path(f"./{folder_images}/{book_id}.{title}.{file_extension}")
+    file_path = Path(f"./{folder_images}/{book_id}.{title}{file_extension}")  # убрал точку {title}.{file_extension}
     with file_path.open('wb') as file:
         file.write(response.content)
     return file_path
