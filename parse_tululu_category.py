@@ -1,3 +1,4 @@
+import argparse
 import os
 import json
 from pathlib import Path
@@ -55,7 +56,6 @@ def get_category_books(book_url):
     return books_tag
 
 
-
 def save_json(books_tag, folder='.'):
     filename = 'category.json'
     filepath = os.path.join(folder, filename)
@@ -63,10 +63,23 @@ def save_json(books_tag, folder='.'):
         json.dump(books_tag, file, ensure_ascii=False)
 
 
+def create_parser(category_url):
+    parser = argparse.ArgumentParser(description='Скрипт для скачивание книг с сайта https://tululu.org/')
+    parser.add_argument('--start_page', nargs='?', default=1,
+                        help='С какой страницы парсить', type=int)
+    parser.add_argument('--end_page', nargs='?', default=find_last_page(category_url),
+                        help='По какую страницу парсить', type=int)
+
+    return parser
+
+
 def main():
     category_url = "https://tululu.org/l55/"
-    last_page = 4
-    links = [parse_category_page(category_url, page) for page in range(1, int(last_page)+1)]
+    parser = create_parser(category_url)
+    namespace = parser.parse_args()
+    start_page, end_page = (namespace.start_page, namespace.end_page)
+    links = [parse_category_page(category_url, page) for page in range(int(start_page), int(end_page))]
+
     book_links = [link for page in links for link in page]
 
     books_tag = [get_category_books(book_url) for book_url in tqdm(book_links)]
