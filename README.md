@@ -48,10 +48,12 @@ python parse_tululu_category.py
 # Одинаковые ключи, которые можно исппользовать для parse_tululu_category.py и main.py
 
 Скачать  книхки и обложки
+
 ```
  -t -i
 ```
 Изменить название папки для контента, по умолчанию "content"
+
 ```
 --dest_folder или -d
 ```
