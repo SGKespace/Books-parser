@@ -34,11 +34,11 @@ def save_json(books_tag, json_path, folder):
         json.dump(books_tag, file, ensure_ascii=False)
 
 
-def create_parser(category_url):
+def create_parser(end_page):
 
     parser = argparse.ArgumentParser(description='Ввод диапазона страниц каталога книг')
     parser.add_argument('--start_page', nargs='?', default=700, help='С какой страницы парсить', type=int)
-    parser.add_argument('--end_page', nargs='?',  default=find_last_page(category_url), help='По какую страницу парсить', type=int)
+    parser.add_argument('--end_page', nargs='?',  default=end_page, help='По какую страницу парсить', type=int)
     parser.add_argument('-i', '--get_imgs', action='store_true', default=False, help='Cкачивать обложки книг')
     parser.add_argument('-t', '--get_txt', action='store_true', default=False, help='Cкачивать текст книг')
     parser.add_argument('-j', '--json_path', default='category', help='Указать свой путь к *.json файлу с результатами')
@@ -49,7 +49,8 @@ def create_parser(category_url):
 
 def main():
     category_url = "https://tululu.org/l55/"
-    parser = create_parser(category_url)
+    end_page = find_last_page(category_url)
+    parser = create_parser(end_page)
     namespace = parser.parse_args()
     start_page, end_page, get_imgs, get_txt, json_path, folder = (namespace.start_page, namespace.end_page,
                                            namespace.get_imgs, namespace.get_txt, namespace.json_path, namespace.dest_folder)
