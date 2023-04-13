@@ -1,94 +1,69 @@
+import argparse
 import os
-import urllib
-from urllib.parse import urljoin
-from pathvalidate import sanitize_filename
 from pathlib import Path
+from time import sleep
+from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
-import argparse
-import time
+from pathvalidate import sanitize_filename
+from tqdm import tqdm
 
 
-class Url_Error(TypeError):
-    pass
 
 
-def main():
-    parser = create_parser()
-    args = parser.parse_args()
-    folder_txt = 'books'
-    folder_images = 'images'
-    Path(folder_txt).mkdir(parents=True, exist_ok=True)
-    Path(folder_images).mkdir(parents=True, exist_ok=True)
-
-    for book_id in range(args.start_id, args.end_id):
-        total_connection_try, current_connection_try = 5, 0
-        while current_connection_try < total_connection_try:
-            url = f'https://tululu.org/b{book_id}/'
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                check_for_redirect(response)
-                soup = BeautifulSoup(response.text, 'lxml')
-                book = parse_book_page(response.url, soup)
-                title = book['book_name']
-                img_url = book['book_image_url']
-                txt_filepath = download_txt(title, book_id, folder_txt)
-                img_filepath = download_image(title, img_url, folder_images, book_id)
-                break
-            except Url_Error:
-                print('Нет книги для скачивания')
-                break
-            except requests.exceptions.HTTPError:
-                print('Нет страницы с книгой.  book_id: ', book_id)
-                break
-            except requests.exceptions.ConnectionError:
-                print(f'Сетевой сбой. Повторная попытка через 2 секунды, попыток - '
-                      f'{current_connection_try} из {total_connection_try}')
-                time.sleep(2)
-                current_connection_try += 1
 
 
-def create_parser():
-    parser = argparse.ArgumentParser(description='Скрипт для скачивание книг с сайта https://tululu.org/')
-    parser.add_argument('--start_id', nargs='?', default=1,
-                        help='Начать с какого id книги парсить', type=int)
-    parser.add_argument('--end_id', nargs='?', default=9999,
-                        help='Закончить каким id книги парсить', type=int)
-    return parser
+def get_books(book_url, get_imgs, get_txt, folder):
+    books_tag = {}
+    while True:
+        try:
+            book_id = book_url.split('/')[-2][1:]
+            response = requests.get(book_url)
+            response.raise_for_status()
+            check_for_redirect(response)
+            books_tag[book_id] = parse_book_page(
+                response, book_url)
+            if get_imgs:
+                download_image(
+                    books_tag[book_id]['Image'], str(book_id), folder)
+            if get_txt:
+                download_txt(books_tag[book_id]['Title'], book_id, folder)
+            break
+        except requests.HTTPError:
+            print('Книга не найдена')
+            break
+        except requests.ConnectionError:
+            print('Нет связи, повторная попытка через 2 сек.')
+            sleep(2)
+    return books_tag
 
 
-def parse_book_page(url, soup):
-    book_url = soup.find('a', text='скачать txt')
-    if book_url is None:
-        raise Url_Error
-
+def parse_book_page(response, url):
+    soup = BeautifulSoup(response.text, 'lxml')
     author_title = soup.select_one('#content h1').text
     title, author = [name.strip() for name in author_title.split('::')]
-
-
-    author = author.strip()
-    title = sanitize_filename(title.strip())
-
-    book_txt_url = urljoin(url, book_url['href'])
-    pars_img_url = soup.select_one('div .bookimage a img[src]')['src']
-    img_url = urljoin(url, pars_img_url)
-    book_comments = [comment.text for comment in soup.select('div.texts span.black')]
-    book_genres = [genre.text for genre in soup.select('span.d_book a')]
-    book = {
-        'book_name': title,
-        'book_author': author,
-        'book_txt_url': book_txt_url if book_url else None,
-        'book_image_url': img_url,
-        'book_comments': book_comments,
-        'book_genres': book_genres,
+    book_img = soup.select_one('div.bookimage img')['src']
+    img_url = (urljoin(url, book_img))
+    genres = [genre.text for genre in soup.select('span.d_book a')]
+    comments = [comment.text for comment in soup.select('.texts span')]
+    return {
+        'Title': title,
+        'Author': author,
+        'Image': img_url,
+        'Genres': genres,
+        'Comments': comments
     }
-    return book
 
 
 def check_for_redirect(response):
     if response.history:
+        print('Книги нет. Редирект на главную')
         raise requests.HTTPError
+
+
+def get_file_ext(img_url):
+    split_url = urlparse(img_url)
+    return os.path.splitext(split_url.path)[-1]
 
 
 def download_txt(title, book_id, folder):
@@ -97,26 +72,45 @@ def download_txt(title, book_id, folder):
     response = requests.get(url, params=params)
     response.raise_for_status()
     check_for_redirect(response)
-    file_path = Path(f"./{folder}/{book_id}.{title}.txt")
-    with file_path.open('wb') as file:
+    filename = f"{book_id}.{title}.txt"
+    filepath = os.path.join(folder, sanitize_filename(filename))
+    with open(filepath, 'wb') as file:
         file.write(response.content)
-    return file_path
 
 
-def download_image(title, img_url, folder_images, book_id):
+def download_image(img_url, title, folder):
     response = requests.get(img_url)
     response.raise_for_status()
     check_for_redirect(response)
-
-    split_url = urllib.parse.urlsplit(img_url)
-    full_path, full_name = os.path.split(split_url.path)
-    file_name, file_extension = os.path.splitext(full_name)
-
-    file_path = Path(f"./{folder_images}/{book_id}.{title}{file_extension}")  # убрал точку {title}.{file_extension}
-    with file_path.open('wb') as file:
+    file_ext = get_file_ext(img_url)
+    filepath = os.path.join(folder, sanitize_filename(title) + file_ext)
+    with open(filepath, 'wb') as file:
         file.write(response.content)
-    return file_path
 
 
-if __name__ == '__main__':
+def create_parser():
+
+    parser = argparse.ArgumentParser(description='Ввод диапазона ID книг')
+    parser.add_argument('--start_id', nargs='?', default=1, help='С какого ID парсить', type=int)
+    parser.add_argument('--end_id', nargs='?', default=9999, help='По какой ID парсить', type=int)
+    parser.add_argument('-i', '--get_imgs', action='store_true', default=False, help='Cкачивать обложки книг')
+    parser.add_argument('-t', '--get_txt', action='store_true', default=False, help='Cкачивать текст книг')
+    parser.add_argument('-d', '--dest_folder', default='content/', help='Путь к каталогу с результатами парсинга: картинкам, книгами, json')
+
+    return parser
+
+
+
+
+def main():
+    parser = create_parser()
+    namespace = parser.parse_args()
+    start_id, end_id, get_imgs, get_txt, folder = (namespace.start, namespace.end,
+                                                   namespace.get_imgs, namespace.get_txt, namespace.dest_folder)
+    Path(folder).mkdir(parents=True, exist_ok=True)
+    books_tag = [get_books(f"https://tululu.org/b{book_id}/", get_imgs, get_txt, folder) for book_id in
+                 tqdm(range(start_id, end_id + 1), desc="Собираем книжки")]
+
+
+if __name__ == "__main__":
     main()
