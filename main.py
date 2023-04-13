@@ -9,10 +9,6 @@ from pathvalidate import sanitize_filename
 from tqdm import tqdm
 
 
-
-
-
-
 def get_books(book_url, get_imgs, get_txt, folder):
     books_tag = {}
     while True:
@@ -98,8 +94,6 @@ def create_parser():
     parser.add_argument('-d', '--dest_folder', default='content/', help='Путь к каталогу с результатами парсинга: картинкам, книгами, json')
 
     return parser
-
-
 
 
 def main():
