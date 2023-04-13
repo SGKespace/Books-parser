@@ -39,8 +39,8 @@ def create_parser(category_url):
     parser = argparse.ArgumentParser(description='Ввод диапазона страниц каталога книг')
     parser.add_argument('--start_page', nargs='?', default=700, help='С какой страницы парсить', type=int)
     parser.add_argument('--end_page', nargs='?',  default=find_last_page(category_url), help='По какую страницу парсить', type=int)
-    parser.add_argument('-i', '--get_imgs', action='store_true', default=True, help='Cкачивать обложки книг')
-    parser.add_argument('-t', '--get_txt', action='store_true', default=True, help='Cкачивать текст книг')
+    parser.add_argument('-i', '--get_imgs', action='store_true', default=False, help='Cкачивать обложки книг')
+    parser.add_argument('-t', '--get_txt', action='store_true', default=False, help='Cкачивать текст книг')
     parser.add_argument('-j', '--json_path', default='category', help='Указать свой путь к *.json файлу с результатами')
     parser.add_argument('-d', '--dest_folder', default='content/', help='Путь к каталогу с результатами парсинга: картинкам, книгами, json')
 
