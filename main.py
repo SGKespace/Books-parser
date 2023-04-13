@@ -3,35 +3,36 @@ import os
 from pathlib import Path
 from time import sleep
 from urllib.parse import urljoin, urlparse
+
 import requests
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from tqdm import tqdm
 
 
-def get_books(book_url, get_imgs, get_txt, folder):
-    books_tag = {}
+def get_book(book_url, get_imgs, get_txt, folder):
+    books = {}
     while True:
         try:
-            book_id = book_url.split('/')[-2][1:]
+            book_id = urlparse(book_url).path[2:-1]
             response = requests.get(book_url)
             response.raise_for_status()
             check_for_redirect(response)
-            books_tag[book_id] = parse_book_page(
+            books[book_id] = parse_book_page(
                 response, book_url)
             if get_imgs:
-                download_image(
-                    books_tag[book_id]['Image'], str(book_id), folder)
+                books[book_id]['Image_patch'] = download_image(
+                    books[book_id]['Image'], str(book_id), folder)
             if get_txt:
-                download_txt(books_tag[book_id]['Title'], book_id, folder)
+                books[book_id]['txt_patch'] = download_txt(books[book_id]['Title'], book_id, folder)
             break
         except requests.HTTPError:
             print('Книга не найдена')
             break
         except requests.ConnectionError:
-            print('Нет связи, повторная попытка через 2 сек.')
-            sleep(2)
-    return books_tag
+            print('Нет связи, повторная попытка через 3 сек.')
+            sleep(3)
+    return books
 
 
 def parse_book_page(response, url):
@@ -72,6 +73,7 @@ def download_txt(title, book_id, folder):
     filepath = os.path.join(folder, sanitize_filename(filename))
     with open(filepath, 'wb') as file:
         file.write(response.content)
+    return filepath
 
 
 def download_image(img_url, title, folder):
@@ -79,16 +81,17 @@ def download_image(img_url, title, folder):
     response.raise_for_status()
     check_for_redirect(response)
     file_ext = get_file_ext(img_url)
-    filepath = os.path.join(folder, sanitize_filename(title) + file_ext)
+    filepath = f"{os.path.join(folder, sanitize_filename(title))}{file_ext}"
     with open(filepath, 'wb') as file:
         file.write(response.content)
+    return filepath
 
 
 def create_parser():
 
     parser = argparse.ArgumentParser(description='Ввод диапазона ID книг')
-    parser.add_argument('--start_id', nargs='?', default=1, help='С какого ID парсить', type=int)
-    parser.add_argument('--end_id', nargs='?', default=9999, help='По какой ID парсить', type=int)
+    parser.add_argument('--start', nargs='?', default=1, help='С какого ID парсить', type=int)
+    parser.add_argument('--end', nargs='?',  default=9999, help='По какой ID парсить', type=int)
     parser.add_argument('-i', '--get_imgs', action='store_true', default=False, help='Cкачивать обложки книг')
     parser.add_argument('-t', '--get_txt', action='store_true', default=False, help='Cкачивать текст книг')
     parser.add_argument('-d', '--dest_folder', default='content/', help='Путь к каталогу с результатами парсинга: картинкам, книгами, json')
@@ -99,11 +102,10 @@ def create_parser():
 def main():
     parser = create_parser()
     args = parser.parse_args()
-    start_id, end_id, get_imgs, get_txt, folder = (args.start, args.end,
-                                                   args.get_imgs, args.get_txt, args.dest_folder)
-    Path(folder).mkdir(parents=True, exist_ok=True)
-    books_tag = [get_books(f"https://tululu.org/b{book_id}/", get_imgs, get_txt, folder) for book_id in
-                 tqdm(range(start_id, end_id + 1), desc="Собираем книжки")]
+    Path(args.dest_folder).mkdir(parents=True, exist_ok=True)
+    parser_range = tqdm(range(args.start, args.end + 1), desc="Собираем книжки")
+    books = [get_book(f"https://tululu.org/b{book_id}/", namespace.get_imgs,
+                          namespace.get_txt, namespace.dest_folder) for book_id in parser_range]
 
 
 if __name__ == "__main__":
