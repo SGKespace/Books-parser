@@ -51,9 +51,9 @@ def main():
     category_url = "https://tululu.org/l55/"
     end_page = find_last_page(category_url)
     parser = create_parser(end_page)
-    namespace = parser.parse_args()
-    start_page, end_page, get_imgs, get_txt, json_path, folder = (namespace.start_page, namespace.end_page,
-                                           namespace.get_imgs, namespace.get_txt, namespace.json_path, namespace.dest_folder)
+    args = parser.parse_args()
+    start_page, end_page, get_imgs, get_txt, json_path, folder = (args.start_page, args.end_page,
+                                           args.get_imgs, args.get_txt, args.json_path, args.dest_folder)
     Path(folder).mkdir(parents=True, exist_ok=True)
     links = [parse_category_page(category_url, page) for page in range(start_page,int(end_page))]
     book_links = [link for page in links for link in page]

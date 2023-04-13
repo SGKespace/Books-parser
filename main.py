@@ -98,9 +98,9 @@ def create_parser():
 
 def main():
     parser = create_parser()
-    namespace = parser.parse_args()
-    start_id, end_id, get_imgs, get_txt, folder = (namespace.start, namespace.end,
-                                                   namespace.get_imgs, namespace.get_txt, namespace.dest_folder)
+    args = parser.parse_args()
+    start_id, end_id, get_imgs, get_txt, folder = (args.start, args.end,
+                                                   args.get_imgs, args.get_txt, args.dest_folder)
     Path(folder).mkdir(parents=True, exist_ok=True)
     books_tag = [get_books(f"https://tululu.org/b{book_id}/", get_imgs, get_txt, folder) for book_id in
                  tqdm(range(start_id, end_id + 1), desc="Собираем книжки")]
