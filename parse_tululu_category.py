@@ -17,11 +17,6 @@ def parse_category_page(soup):
     return book_links
 
 
-def join_url(book_links, url):
-    links = [urljoin(url, book_link) for book_link in book_links]
-    return links
-
-
 def save_json(books, json_path, folder):
     filename = f'{json_path}.json'
     filepath = os.path.join(folder, filename)
@@ -58,7 +53,15 @@ def main():
             response.raise_for_status()
             check_for_redirect(response)
             soup = BeautifulSoup(response.text, 'lxml')
-            links.extend(join_url(parse_category_page(soup), url))
+
+            book_links = parse_category_page(soup)
+            links_page = [urljoin(url, book_link) for book_link in book_links]
+            links.extend(links_page)
+
+        except requests.ConnectionError:
+            print('Нет связи, повторная попытка через 3 сек.')
+            sleep(3)
+
         except requests.HTTPError:
            print('Нет странички')
 
@@ -68,3 +71,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
