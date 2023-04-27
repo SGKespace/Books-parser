@@ -1,11 +1,16 @@
 import json
-# import collections
 
-# from http.server import HTTPServer, SimpleHTTPRequestHandler
-# from environs import Env
+from urllib import parse
+from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 from livereload import Server
+
+# from http.server import HTTPServer, SimpleHTTPRequestHandler
+# from environs import Env
+
+
+PAGE_DIRECTORY = 'Pages'
 
 
 def on_reload():
@@ -19,18 +24,22 @@ def on_reload():
     books_path = Path.joinpath(Path.cwd().parents[0], 'lesson10/content/', 'category.json')
     with open(books_path, 'r', encoding='utf-8') as json_file:
         books = json.load(json_file)
-    book_form=[]
+
+    book_form = []
     for page in books:
         for book in page:
             book_form.insert(0, page[book])
 
-    # books_set = collections.defaultdict(list)
-    rendered_page = template.render(
-        books=book_form
-    )
+    Path(PAGE_DIRECTORY).mkdir(parents=True, exist_ok=True)
+    books = list(chunked(book_form, 20))
+    for page_number, books_page in enumerate(books):
+        rendered_page = template.render(
+            books=books[page_number]
+        )
+        with open(Path(PAGE_DIRECTORY).joinpath(f'index{page_number + 1}.html'), 'w', encoding="utf8") as file:
+            file.write(rendered_page)
 
-    with open('index.html', 'w', encoding="utf8") as file:
-        file.write(rendered_page)
+
 
 def main():
     on_reload()
