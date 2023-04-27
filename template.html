@@ -12,6 +12,15 @@
   </head>
   <body>
     <div class="container">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="index{{page_number}}.html">Previous</a></li>
+          {% for page in range(pages_number) %}
+            <li class="page-item"><a class="page-link" href="index{{page+1}}.html">{{page+1}}</a></li>
+          {% endfor %}
+          <li class="page-item"><a class="page-link" href="index{{page_number+2}}.html">Next</a></li>
+        </ul>
+      </nav>
       <div class="row">
         {% for book in books %}
         <div class="w-50">
