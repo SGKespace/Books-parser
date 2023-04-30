@@ -1,6 +1,5 @@
 import json
 
-from urllib import parse
 from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
