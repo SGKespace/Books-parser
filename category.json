@@ -17,7 +17,7 @@
         "Я читала эту книгу много раз она мне очень понравилась... Она заинтересовала, заинтриговала меня. Фильм мне не очень понравился. Читайте книги они могут оказаться настолько интересными, что вы не сможете остановится пока не дочитаете. VZ.",
         "Очень хорошая книга всем рекомендую!!!!!!!!!!!"
       ],
-      "Image_patch": "content/59678.jpg"
+      "Image_patch": "media/images/59678.jpg"
     }
   },
   {
@@ -30,8 +30,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/59890.jpg",
-      "txt_patch": "content/59890.Изгнанники Земли.txt"
+      "Image_patch": "media/images/59890.jpg",
+      "txt_patch": "media/books/59890.Изгнанники Земли.txt"
     }
   },
   {
@@ -44,8 +44,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/59979.gif",
-      "txt_patch": "content/59979.Капитан Буревестника.txt"
+      "Image_patch": "media/images/59979.gif",
+      "txt_patch": "media/books/59979.Капитан Буревестника.txt"
     }
   },
   {
@@ -58,8 +58,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/60207.jpg",
-      "txt_patch": "content/60207.Лазурный гигант.txt"
+      "Image_patch": "media/images/60207.jpg",
+      "txt_patch": "media/books/60207.Лазурный гигант.txt"
     }
   },
   {
@@ -73,7 +73,7 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/60526.jpg"
+      "Image_patch": "media/images/60526.jpg"
     }
   },
   {
@@ -86,8 +86,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/60627.jpg",
-      "txt_patch": "content/60627.Остров Больших Молний.txt"
+      "Image_patch": "media/images/60627.jpg",
+      "txt_patch": "media/books/60627.Остров Больших Молний.txt"
     }
   },
   {
@@ -114,7 +114,7 @@
         "Книгу \"Плутония\" прочитала в раннем детстве, сейчас мне 55 лет, но из памяти не уходит. Благодаря интернету, снова нашла её и конечно буду читать. Замечательная книга, читается легко, очень захватывает сюжет. Не люблю фантастику, но вот эта легла на душу, спасибо автору.",
         "Очень захватывающая история. Впервые прочитала еще в детстве, но впечатления остались до сих пор. Сейчас мне 60, книгу прочитала за ночь. КЛАСС!!!"
       ],
-      "Image_patch": "content/60799.jpg"
+      "Image_patch": "media/images/60799.jpg"
     }
   },
   {
@@ -127,8 +127,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/60835.gif",
-      "txt_patch": "content/60835.Подводные земледельцы.txt"
+      "Image_patch": "media/images/60835.gif",
+      "txt_patch": "media/books/60835.Подводные земледельцы.txt"
     }
   },
   {
@@ -141,8 +141,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/61065.jpg",
-      "txt_patch": "content/61065.Радамехский карлик.txt"
+      "Image_patch": "media/images/61065.jpg",
+      "txt_patch": "media/books/61065.Радамехский карлик.txt"
     }
   },
   {
@@ -155,7 +155,7 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/61127.jpg"
+      "Image_patch": "media/images/61127.jpg"
     }
   },
   {
@@ -168,8 +168,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/61130.gif",
-      "txt_patch": "content/61130.Рубиновая звезда.txt"
+      "Image_patch": "media/images/61130.gif",
+      "txt_patch": "media/books/61130.Рубиновая звезда.txt"
     }
   },
   {
@@ -182,8 +182,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/61192.gif",
-      "txt_patch": "content/61192.Семь смертей Лешего.txt"
+      "Image_patch": "media/images/61192.gif",
+      "txt_patch": "media/books/61192.Семь смертей Лешего.txt"
     }
   },
   {
@@ -200,7 +200,7 @@
         "Сюжет Книги очень хорош, читая в детском возрасте даже отличен. Когда спустя 20 лет перечитывал книгу, сильно бросилась в глаза политическая пропаганда - пионеры, КомПартия и т.д. Но в общем прочесть стоит - может и сейчас ещё Тайга-Матушка секреты прячет.",
         "Книга супер! Читал в детстве! До сих пор помню!"
       ],
-      "Image_patch": "content/61269.jpg"
+      "Image_patch": "media/images/61269.jpg"
     }
   },
   {
@@ -215,8 +215,8 @@
       "Comments": [
         "Третий раз возвращаюсь к этой книге, которая написана с таким мастерством, что заставляет полностью погрузится в подводный мир, почувствовать себя участником захватывающих событий, заставляет задуматься о месте человека на нашей планете, о нашем общем будущем."
       ],
-      "Image_patch": "content/61433.jpg",
-      "txt_patch": "content/61433.Тайна Архелона (Крик дельфина).txt"
+      "Image_patch": "media/images/61433.jpg",
+      "txt_patch": "media/books/61433.Тайна Архелона (Крик дельфина).txt"
     }
   },
   {
@@ -233,7 +233,7 @@
         "Первая часть вестников времен была гораздо лучше, нежели жта вторая часть. Вообще одна скуката, балтология и размышления персонажей. Скукатище...",
         "Первая часть вестников времен была гораздо лучше, нежели эта вторая часть. Вообще одна скуката, балтология и размышления персонажей. Скукатище..."
       ],
-      "Image_patch": "content/61584.jpg"
+      "Image_patch": "media/images/61584.jpg"
     }
   },
   {
@@ -249,7 +249,7 @@
       "Comments": [
         "книга вполне дает возможность отвлечься от сегодняшнего времени, хочется читать дальше ...."
       ],
-      "Image_patch": "content/61702.jpg"
+      "Image_patch": "media/images/61702.jpg"
     }
   },
   {
@@ -262,8 +262,8 @@
         "Прочие приключения"
       ],
       "Comments": [],
-      "Image_patch": "content/61721.gif",
-      "txt_patch": "content/61721.Виртуальная Мадам Марго.txt"
+      "Image_patch": "media/images/61721.gif",
+      "txt_patch": "media/books/61721.Виртуальная Мадам Марго.txt"
     }
   },
   {
@@ -277,7 +277,7 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/61886.jpg"
+      "Image_patch": "media/images/61886.jpg"
     }
   },
   {
@@ -290,7 +290,7 @@
         "Современная проза"
       ],
       "Comments": [],
-      "Image_patch": "content/62723.jpg"
+      "Image_patch": "media/images/62723.jpg"
     }
   },
   {
@@ -304,7 +304,7 @@
         "Социально-философская фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/62916.jpg"
+      "Image_patch": "media/images/62916.jpg"
     }
   },
   {
@@ -317,8 +317,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/65352.gif",
-      "txt_patch": "content/65352.Глас Господа.txt"
+      "Image_patch": "media/images/65352.gif",
+      "txt_patch": "media/books/65352.Глас Господа.txt"
     }
   },
   {
@@ -334,8 +334,8 @@
       "Comments": [
         "Лем потрясающий писатель, очень советую! Не пожалеете."
       ],
-      "Image_patch": "content/66293.jpg",
-      "txt_patch": "content/66293.Из воспоминаний Иёна Тихого.txt"
+      "Image_patch": "media/images/66293.jpg",
+      "txt_patch": "media/books/66293.Из воспоминаний Иёна Тихого.txt"
     }
   },
   {
@@ -348,8 +348,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/67112.jpg",
-      "txt_patch": "content/67112.Кибериада.txt"
+      "Image_patch": "media/images/67112.jpg",
+      "txt_patch": "media/books/67112.Кибериада.txt"
     }
   },
   {
@@ -362,7 +362,7 @@
         "Русская классическая проза"
       ],
       "Comments": [],
-      "Image_patch": "content/70579.gif"
+      "Image_patch": "media/images/70579.gif"
     }
   },
   {
@@ -375,8 +375,8 @@
         "Научная фантастика"
       ],
       "Comments": [],
-      "Image_patch": "content/71167.gif",
-      "txt_patch": "content/71167.Охотники до любви.txt"
+      "Image_patch": "media/images/71167.gif",
+      "txt_patch": "media/books/71167.Охотники до любви.txt"
     }
   }
 ]
