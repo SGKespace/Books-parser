@@ -10,7 +10,7 @@ from livereload import Server
 # from environs import Env
 
 
-PAGE_DIRECTORY = 'Pages'
+PAGE_DIRECTORY = 'pages'
 
 
 def on_reload():
@@ -21,7 +21,7 @@ def on_reload():
 
     template = env.get_template('./template.html')
 
-    books_path = Path.joinpath(Path.cwd().parents[0], 'lesson10/content/', 'category.json')
+    books_path = Path.joinpath(Path.cwd().parents[0], 'lesson10/', 'category.json')
     with open(books_path, 'r', encoding='utf-8') as json_file:
         books = json.load(json_file)
 
