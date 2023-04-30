@@ -5,9 +5,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from pathlib import Path
 from livereload import Server
 
-# from http.server import HTTPServer, SimpleHTTPRequestHandler
-# from environs import Env
-
 
 PAGE_DIRECTORY = 'pages'
 
@@ -41,15 +38,11 @@ def on_reload():
             file.write(rendered_page)
 
 
-
 def main():
     on_reload()
     server = Server()
     server.watch('*.html', on_reload)
     server.serve(root='.')
-
-    # server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-    # server.serve_forever()
 
 
 if __name__ == '__main__':
