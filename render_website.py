@@ -55,7 +55,9 @@ def on_reload():
 
 def main():
     on_reload()
-
+    server = Server()
+    server.watch('*.html', on_reload)
+    server.serve(root='.')
 
 if __name__ == '__main__':
     main()
